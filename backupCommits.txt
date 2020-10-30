@@ -1,0 +1,100 @@
+commmit 0e69346e0a45bcb0a72698bad16d22d0d122f7fd (HEAD -> dawg, master)
+Author: Jockill <hugo.jochymski@etu.unistra.fr>
+Date:   Fri Oct 30 18:46:13 2020 +0100
+
+    Test de la branche
+
+commit 8ccc88162186ff3d3095ecff4a9ce23e94df1514 (trie)
+Author: Wernert Thomas <thomas.wernert@etu.unistra.fr>
+Date:   Fri Oct 30 15:20:22 2020 +0100
+
+    Remplacement de du type 'mot' par 'char'
+
+commit 7285d046bcdd1795eb1430b7658578d17124cbb5
+Author: Wernert Thomas <thomas.wernert@etu.unistra.fr>
+Date:   Fri Oct 30 10:54:24 2020 +0100
+
+    Avancement arbre.c
+
+commit 972acb76eeb977ae585287e256a8431e45e55999
+Author: Wernert Thomas <thomas.wernert@etu.unistra.fr>
+Date:   Fri Oct 30 09:58:16 2020 +0100
+
+  
+commit 0e69346e0a45bcb0a72698bad16d22d0d122f7fd (HEAD -> dawg, master)
+Author: Jockill <hugo.jochymski@etu.unistra.fr>
+Date:   Fri Oct 30 18:46:13 2020 +0100
+
+    Test de la branche
+
+commit 8ccc88162186ff3d3095ecff4a9ce23e94df1514 (trie)
+Author: Wernert Thomas <thomas.wernert@etu.unistra.fr>
+Date:   Fri Oct 30 15:20:22 2020 +0100
+
+    Remplacement de du type 'mot' par 'char'
+
+commit 7285d046bcdd1795eb1430b7658578d17124cbb5
+Author: Wernert Thomas <thomas.wernert@etu.unistra.fr>
+Date:   Fri Oct 30 10:54:24 2020 +0100
+
+    Avancement arbre.c
+
+commit 972acb76eeb977ae585287e256a8431e45e55999
+Author: Wernert Thomas <thomas.wernert@etu.unistra.fr>
+Date:   Fri Oct 30 09:58:16 2020 +0100
+
+    Modification des includes/headers
+
+commit 99852575ced8cedfea594d658aa14a4ea4d4239d
+Author: Jockill <hugo.jochymski@etu.unistra.fr>
+Date:   Wed Oct 28 19:00:50 2020 +0100
+
+    Avancement sur le DAWG
+
+commit fe4851ee2f9b09e684d51602983f71b4fb8d0fd3
+Author: Wernert Thomas <thomas.wernert@etu.unistra.fr>
+Date:   Tue Oct 27 23:26:52 2020 +0100
+
+    Ajout du début de l'arbre, question 1
+
+commit 23f3f62d8d030ebf0aa521d49bb6efab5ceb063c
+Author: Jockill <hugo.jochymski@etu.unistra.fr>
+Date:   Mon Oct 26 17:40:49 2020 +0100
+
+    Debut du travail sur le DAWG
+
+commit c76f174eab0f68856fef7184496b09e07df0802f
+Author: Jockill <hugo.jochymski@etu.unistra.fr>
+Date:   Mon Oct 26 17:39:54 2020 +0100
+
+    Ajout de la fonction plusGrandPrefixeCommun
+
+commit 6a2d1a558c72f6614973c79d6ac70b89e3e55c84
+Author: Jockill <hugo.jochymski@etu.unistra.fr>
+Date:   Mon Oct 26 16:09:13 2020 +0100
+
+    Réorganisation du dossier de travail, ajout d'un makefile et de doxygen
+
+commit 893d744f69c049fd2999e29baf828345c330f746
+Author: Jockill <hugo.jochymski@etu.unistra.fr>
+Date:   Mon Oct 26 15:35:46 2020 +0100
+
+    Fin de test
+
+commit b0a3b541509808604ca8f0ab4ed67ae12bc5f8f3
+Author: Jockill <hugo.jochymski@etu.unistra.fr>
+Date:   Mon Oct 26 15:34:48 2020 +0100
+
+    Test 2
+
+commit 2c4ab02ff1a214c2c622c934185e2258d20a376f
+Author: Jockill <hugo.jochymski@etu.unistra.fr>
+Date:   Mon Oct 26 15:32:22 2020 +0100
+
+    Test commit
+
+commit 06ce68c4fb14101c1ca4b275541b94eee898efbe
+Author: Jockill <hugo.jochymski@etu.unistra.fr>
+Date:   Mon Oct 26 15:25:24 2020 +0100
+
+    Commit initial, ajout des sources des profs
