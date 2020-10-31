@@ -14,6 +14,17 @@
 /******************************************************************************/
 
 /*!
+\struct dawg_arete
+\brief Arete reliant deux sommets du DAWG
+*/
+struct dawg_arete
+{
+        int label; /*!< Label de l'arete */
+        struct dawg_sommet* sommetGauche; /*!< Pointeur vers le sommet gauche. */
+        struct dawg_sommet* sommetDroit; /*!< Pointeur vers le sommet droit. */
+};
+
+/*!
  \struct dawg_sommet
  \brief Structure représentatant un sommet du DAWG.
 */
@@ -24,16 +35,6 @@ struct dawg_sommet
         bool motValide; /*!< Mot présent dans le dictionnaire ? */
 };
 
-/*!
- \struct dawg_arete
- \brief Arete reliant deux sommets du DAWG
-*/
-struct dawg_arete
-{
-        int label; /*!< Label de l'arete */
-        struct dawg_sommet* sommetGauche; /*!< Pointeur vers le sommet gauche. */
-        struct dawg_sommet* sommetDroit; /*!< Pointeur vers le sommet droit. */
-};
 
 /******************************************************************************/
 /******************************************************************************/
