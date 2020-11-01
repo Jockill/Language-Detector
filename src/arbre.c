@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "../header/utils.h"
+#include "utils.c"
 //#include "../header/hashmap.h"
 
 #define N 25 // Taille du tab de pointeurs de l'alphabet 
@@ -32,13 +33,16 @@ Arbre noeud_initialisation(void) {
 
 void noeud_insertion(Noeud *racine, char *message) {
 	Arbre chemin = racine; 
+
+	size_t index; 
 	
 	while(*message) {
+		index = ascii_to_index(*message); 
 		// Création d'un nv noeud si le chemin n'existe pas 
-		if(chemin -> tab[*message - 'a'] == NULL) {
-			chemin -> tab[*message - 'a'] = noeud_initialisation(); 
+		if(chemin -> tab[index] == NULL) {
+			chemin -> tab[index] = noeud_initialisation(); 
 		}
-		chemin = chemin -> tab[*message - 'a']; 
+		chemin = chemin -> tab[index]; 
 		message++; 
 	}
 	chemin -> feuille = true; 
@@ -52,12 +56,14 @@ bool recherche_mot_arbre(Arbre racine, char *message) {
 	if(racine == NULL) {
 		return result; 
 	}
+	size_t index; 
 	Arbre chemin = racine; 
 	// Tant que nous sommes pas à la fin de la string 
 	while(*message) {
 
 		// Pr aller au noeud suivant 
-		chemin = chemin -> tab[*message - 'a']; 
+		index = ascii_to_index(*message); 
+		chemin = chemin -> tab[index]; 
 		
 		// Test si le noeud suivant est existant 
 		if(chemin == NULL) {
@@ -94,16 +100,21 @@ bool possede_fils(Arbre chemin) {
 
 int main() {
 	Arbre racine = noeud_initialisation(); 
-	noeud_insertion(racine, "hello"); 
-	printf("%d\n", recherche_mot_arbre(racine, "hello")); 
+	noeud_insertion(racine, "zea"); 
+	printf("%d\n", recherche_mot_arbre(racine, "zea")); 
 	
 
-	printf("entier : %d\n", 'a'); 
-	printf("char : %c\n", 'a'); 
-	
+
 
 
 /*
+	char *mot= "chasse";
+	printf("entier : %d\n", mot); 
+	printf("string : %s\n", mot);
+	printf("char : %c\n", *mot); 
+	printf("entier : %d\n", 'a'); 
+	printf("char : %c\n", 'a'); 
+
 	char *mot= "chasse";  
 	printf("entier : %d\n", mot); 
 	printf("string : %s\n", mot); // Ne pas mettre le & !!
