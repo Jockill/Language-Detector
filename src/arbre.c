@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "../header/utils.h"
-#include "../header/hashmap.h"
+//#include "../header/hashmap.h"
 
-#define N 25
+#define N 25 // Taille du tab de pointeurs de l'alphabet 
 
 typedef struct Noeud {
 
@@ -33,7 +33,6 @@ Arbre noeud_initialisation(void) {
 void noeud_insertion(Noeud *racine, char *message) {
 	Arbre chemin = racine; 
 	
-	
 	while(*message) {
 		// Création d'un nv noeud si le chemin n'existe pas 
 		if(chemin -> tab[*message - 'a'] == NULL) {
@@ -54,6 +53,7 @@ bool recherche_mot_arbre(Arbre racine, char *message) {
 		return result; 
 	}
 	Arbre chemin = racine; 
+	// Tant que nous sommes pas à la fin de la string 
 	while(*message) {
 
 		// Pr aller au noeud suivant 
@@ -64,7 +64,7 @@ bool recherche_mot_arbre(Arbre racine, char *message) {
 			return result; 
 		}
 
-		message++; 
+		message++; // Enlève la premiere lettre à chauqe itération mais garde la fin 
 	} 
 	// Si le chemin noeud est une feuille et nous avons atteint 
 	// la fin du message nous retournons vrai 
@@ -94,11 +94,44 @@ bool possede_fils(Arbre chemin) {
 
 int main() {
 	Arbre racine = noeud_initialisation(); 
-	noeud_insertion(racine, "hell"); 
+	noeud_insertion(racine, "hello"); 
 	printf("%d\n", recherche_mot_arbre(racine, "hello")); 
+	
+
+	printf("entier : %d\n", 'a'); 
+	printf("char : %c\n", 'a'); 
+	
+
+
+/*
+	char *mot= "chasse";  
+	printf("entier : %d\n", mot); 
+	printf("string : %s\n", mot); // Ne pas mettre le & !!
+	printf("char : %c\n", mot); // & pas sur que change quelque chose 
+	
+	mot++; 
+	printf("entier : %d\n", mot); 
+	printf("string : %s\n", mot); 
+	printf("char : %c\n", mot); 
+
+	
+	//mot = *mot - 'a'; 
+	//printf("entier : %d\n", mot); 
+	//printf("string : %s\n", mot); 
+	//printf("char : %c\n", mot); 
+*/
 	return 0; 
 }
 
+
+
+/*
+POUR : *message - 'a'
+*message == premier pointeur de la string 
+- 'a' == 
+
+
+*/
 
 
 
