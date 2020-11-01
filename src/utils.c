@@ -6,7 +6,7 @@
 size_t plusGrandPrefixeCommun(char* mot1, char* mot2)
 {
         size_t i = 0;
-        while (mot1[i] == mot2[i]) i++
+        while (mot1[i] == mot2[i]) i++; 
         return i;
 }
 
