@@ -1,7 +1,7 @@
 #include "../header/arbre.h"
 #include "../header/utils.h"
 
-// Manque data et flag 
+
 Arbre noeud_initialisation(void) {
 	Arbre nouveau_noeud = (Arbre)malloc(sizeof(Noeud)); 
 	nouveau_noeud -> feuille = false; 
