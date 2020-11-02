@@ -1,4 +1,5 @@
 #include "../header/arbre.h"
+#include "../header/utils.h"
 
 // Manque data et flag 
 Arbre noeud_initialisation(void) {
@@ -62,8 +63,6 @@ bool recherche_mot_arbre(Arbre racine, char *message) {
 
 
 
-// testons avec l'adresse de la racine == &racine 
-// Faisaons le manière récu 
 void suppression_arbre(Arbre racine) {
 	for(size_t i = 0; i < N; i++) {
 		if(racine -> tab[i] != NULL) {
@@ -75,6 +74,8 @@ void suppression_arbre(Arbre racine) {
 	}
 	free(racine); 
 }
+
+
 
 
 int main() {
@@ -117,3 +118,6 @@ int main() {
 */
 	return 0; 
 }
+
+
+
