@@ -1,20 +1,4 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include "../header/utils.h"
-#include "utils.c"
-//#include "../header/hashmap.h"
-
-#define N 26 // Taille du tab de pointeurs de l'alphabet 
-
-typedef struct Noeud {
-	struct Noeud *tab[N]; // Tableau des lettres a-z 
-	bool feuille; // Terminaison d'une branche et dico ? 
-} Noeud; 
-
-typedef struct Noeud *Arbre; 
-
-
+#include "../header/arbre.h"
 
 // Manque data et flag 
 Arbre noeud_initialisation(void) {
@@ -75,24 +59,6 @@ bool recherche_mot_arbre(Arbre racine, char *message) {
 	result = chemin -> feuille; 
 	return result; 
 }
-
-
-
-// Voir si un noeud possède un noeud fils 
-// Retourne bool 
-bool possede_fils(Arbre chemin) {
-	size_t cptr = 0;
-	bool result = false; 
-	while(cptr < N) {
-		// Si fils 
-		if(chemin -> tab[cptr]) {
-			result = true; 
-			return result; 
-		}
-	}
-	return result; 
-}
-
 
 
 
