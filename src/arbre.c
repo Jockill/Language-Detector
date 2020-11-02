@@ -5,12 +5,9 @@
 #include "utils.c"
 //#include "../header/hashmap.h"
 
-#define N 25 // Taille du tab de pointeurs de l'alphabet 
+#define N 26 // Taille du tab de pointeurs de l'alphabet 
 
 typedef struct Noeud {
-
-	//char *data; // Les mots 
-	//bool flag; // Savoir si mot du dictionnaire Pr la phrase
 	struct Noeud *tab[N]; // Tableau des lettres a-z 
 	bool feuille; // Terminaison d'une branche et dico ? 
 } Noeud; 
@@ -23,14 +20,14 @@ typedef struct Noeud *Arbre;
 Arbre noeud_initialisation(void) {
 	Arbre nouveau_noeud = (Arbre)malloc(sizeof(Noeud)); 
 	nouveau_noeud -> feuille = false; 
-	for(int i = 0; i <= N; i++) {
+	for(int i = 0; i < N; i++) {
 		nouveau_noeud -> tab[i] = NULL; 
 	}
 	return nouveau_noeud; 
 }
 
-
-
+// Ajoute un noeud à l'arbre 
+// Ajoute le flag feuille(mot dico) à la fin 
 void noeud_insertion(Noeud *racine, char *message) {
 	Arbre chemin = racine; 
 
@@ -51,6 +48,7 @@ void noeud_insertion(Noeud *racine, char *message) {
 
 
 // Pr savoir si est mot du dico 
+// Retourne bool pour savoir si mot est ds arbre 
 bool recherche_mot_arbre(Arbre racine, char *message) {
 	bool result = false; 
 	if(racine == NULL) {
@@ -81,6 +79,7 @@ bool recherche_mot_arbre(Arbre racine, char *message) {
 
 
 // Voir si un noeud possède un noeud fils 
+// Retourne bool 
 bool possede_fils(Arbre chemin) {
 	size_t cptr = 0;
 	bool result = false; 
@@ -97,6 +96,20 @@ bool possede_fils(Arbre chemin) {
 
 
 
+// testons avec l'adresse de la racine == &racine 
+// Faisaons le manière récu 
+void suppression_arbre(Arbre racine) {
+	for(size_t i = 0; i < N; i++) {
+		if(racine -> tab[i] != NULL) {
+			suppression_arbre(racine -> tab[i]); 
+		}
+		else { 
+			continue; 
+		}
+	}
+	free(racine); 
+}
+
 
 int main() {
 	Arbre racine = noeud_initialisation(); 
@@ -104,8 +117,13 @@ int main() {
 	printf("%d\n", recherche_mot_arbre(racine, "zea")); 
 	
 
+	noeud_insertion(racine, "zearo"); 
+	printf("%d\n", recherche_mot_arbre(racine, "zearoa")); 
 
+	noeud_insertion(racine, "albert"); 
+	printf("%d\n", recherche_mot_arbre(racine, "albert")); 
 
+	suppression_arbre(racine); 
 
 /*
 	char *mot= "chasse";
@@ -133,29 +151,3 @@ int main() {
 */
 	return 0; 
 }
-
-
-
-/*
-POUR : *message - 'a'
-*message == premier pointeur de la string 
-- 'a' == 
-
-
-*/
-
-
-
-
-
-
-
-/*
-bool x = true;
-printf("%B\n", x);
-Ne marche pas 
-
-%d trasnforme le "bool" en 1 si vrai sinon 0 
-Implémnter de base ds ce type 
-
-*/
