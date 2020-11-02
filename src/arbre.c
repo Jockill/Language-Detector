@@ -5,7 +5,7 @@
 Arbre noeud_initialisation(void) {
 	Arbre nouveau_noeud = (Arbre)malloc(sizeof(Noeud)); 
 	nouveau_noeud -> feuille = false; 
-	for(int i = 0; i < N; i++) {
+	for(size_t i = 0; i < N; i++) {
 		nouveau_noeud -> tab[i] = NULL; 
 	}
 	return nouveau_noeud; 
@@ -77,7 +77,7 @@ void suppression_arbre(Arbre racine) {
 
 
 
-
+/*
 int main() {
 	Arbre racine = noeud_initialisation(); 
 	noeud_insertion(racine, "zea"); 
@@ -92,7 +92,7 @@ int main() {
 
 	suppression_arbre(racine); 
 
-/*
+
 	char *mot= "chasse";
 	printf("entier : %d\n", mot); 
 	printf("string : %s\n", mot);
@@ -115,9 +115,9 @@ int main() {
 	//printf("entier : %d\n", mot); 
 	//printf("string : %s\n", mot); 
 	//printf("char : %c\n", mot); 
-*/
+
 	return 0; 
 }
-
+*/
 
 
