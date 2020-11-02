@@ -35,6 +35,12 @@ struct dawg_sommet
         bool motValide; /*!< Mot présent dans le dictionnaire ? */
 };
 
+struct dawg_root
+{
+        Stack pile; //Attention Stack == struct stack*
+        struct hashmap_s map;
+        dawg_arete aretesSortantes[26];
+};
 
 /******************************************************************************/
 /******************************************************************************/
