@@ -145,14 +145,13 @@ int main(int argc, char* argv[]) {
 
 
 
-	// Le fait en 1er juste et après double tout et affiche "null" à la fin 
 	// Découpage de la phrase
 	size_t len = strlen(phrase); 
 	char temp[] = " "; 
 	char *mot = strtok(phrase, temp);  
 	while(mot != NULL) {
 		// Le truc à faire 
-		printf("'%s'\n", mot);
+		printf("%s\n", mot);
 		cptr_fr = test_mot_fr(racine_fr, mot, cptr_fr); 
 		cptr_eng = test_mot_eng(racine_eng, mot, cptr_eng); 
 		cptr_germ = test_mot_germ(racine_germ, mot, cptr_germ); 
