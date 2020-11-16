@@ -4,15 +4,15 @@
 #include "../header/utils.h"
 #include "../header/stack.h"
 
-
+/*!*/
 void dawg_minimiser(struct dawg_sommet racine, size_t p)
 {
         dawg_arete* a;
-        while (stack_size(pile) > p)
+        while (stack_size(racine->pile) > p)
         {
-                a = stack_pop(pile);
+                a = stack_pop(racine->pile);
                 //Si a se trouve dans la hashmap
-                
+
                 if (hashmap_get(hashmap, a->sommetDroit, len) != NULL)
                 {
                         dawg_relier(a->sommetGauche, a->sommetDroit);
