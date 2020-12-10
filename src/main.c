@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
 
 
 	// Affichage de la langue 
-	donne_langue( cptr_fr, cptr_eng, cptr_germ); 
+	donne_langue(cptr_fr, cptr_eng, cptr_germ); 
 
 
 

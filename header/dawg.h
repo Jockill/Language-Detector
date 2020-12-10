@@ -9,6 +9,9 @@
 
 #include <stdbool.h>
 
+
+#define N 26 // Taille + 1 
+
 /******************************************************************************/
 /************************************STRUCT************************************/
 /******************************************************************************/
@@ -19,9 +22,9 @@
 */
 struct dawg_sommet
 {
-        int label; /*!< Label unique du sommet */
-        dawg_arete aretesSortantes[26]; /*!< Arêtes sortantes du sommet. */
-        bool motValide; /*!< Mot présent dans le dictionnaire ? */
+	int label; /*!< Label unique du sommet courant*/
+	struct dawg_sommet *tab[N]; /*!< Arêtes sortantes du sommet. */
+	bool feuille; /*!< Mot présent dans le dictionnaire ? */
 };
 
 /*!
@@ -30,9 +33,9 @@ struct dawg_sommet
 */
 struct dawg_arete
 {
-        int label; /*!< Label de l'arete */
-        struct dawg_sommet* sommetGauche; /*!< Pointeur vers le sommet gauche. */
-        struct dawg_sommet* sommetDroit; /*!< Pointeur vers le sommet droit. */
+	int label; /*!< Label de l'arete */
+	struct dawg_sommet* sommetGauche; /*!< Pointeur vers le sommet gauche. */ // SRC
+	struct dawg_sommet* sommetDroit; /*!< Pointeur vers le sommet droit. */	// DST 
 };
 
 /******************************************************************************/

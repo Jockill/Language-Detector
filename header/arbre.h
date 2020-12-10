@@ -35,8 +35,8 @@ typedef struct Noeud {
  \struct Noeud *arbre
  \brief Représente racine de l'arbre
 */
-typedef struct Noeud *Tas; 
-//typedef struct Noeud *Arbre; 
+//typedef struct Noeud *Tas; 
+typedef struct Noeud *Arbre; 
 
 
 /******************************************************************************/
