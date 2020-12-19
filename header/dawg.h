@@ -10,7 +10,7 @@
 #include <stdbool.h>
 
 
-#define N 26 // Taille + 1 
+#define N 26 // Taille + 1
 
 /******************************************************************************/
 /************************************STRUCT************************************/
@@ -35,7 +35,7 @@ struct dawg_arete
 {
 	int label; /*!< Label de l'arete */
 	struct dawg_sommet* sommetGauche; /*!< Pointeur vers le sommet gauche. */ // SRC
-	struct dawg_sommet* sommetDroit; /*!< Pointeur vers le sommet droit. */	// DST 
+	struct dawg_sommet* sommetDroit; /*!< Pointeur vers le sommet droit. */	// DST
 };
 
 /******************************************************************************/
@@ -47,7 +47,7 @@ struct dawg_arete
    \param [in] size_t p Profondeur jusqu'à laquelle minimiser.
    \return NONE
 */
-void dawg_minimiser(struct dawg_sommet racine, size_t p)
+void dawg_minimiser(struct dawg_sommet racine, size_t p);
 
 /*!
    \brief Ajoute des noeuds au DAWG en fonction du mot passé en argument.
@@ -56,7 +56,7 @@ void dawg_minimiser(struct dawg_sommet racine, size_t p)
    \param [in] size_t indexDebut Index du mot à partir duquel commencer à ajouter.
    \return NONE
 */
-void dawg_ajouter(dawg_sommet* depart, char* mot, size_t indexDebut)
+void dawg_ajouter(struct dawg_sommet* depart, char* mot, size_t indexDebut);
 
 /*!
 \brief Insere par mutation un mot dans le DAWG.

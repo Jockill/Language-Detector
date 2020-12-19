@@ -1,13 +1,65 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 #include "../header/utils.h"
+#include "../header/io.h"
+#include "../header/dawg.h"
+#include "../header/arbre.h"
 
-size_t plusGrandPrefixeCommun(char* mot1, char* mot2) {
+
+void detection(int arbre, int temps)
+{
+	clear();
+	clock_t tDebut, tTotal;
+	char phrase[MAX_SIZE] = {0};
+
+	lecture(phrase);
+
+	if (temps == 1) tDebut = clock();
+
+
+	if (arbre == DETEC_TRIE)
+	{
+		detec_trie(phrase);
+	}
+	else if (arbre == DETEC_DAWG)
+	{
+		printf("WIP\n");
+		//detec_dawg()
+	}
+
+
+	if (temps == 1)
+	{
+		tTotal = clock()-tDebut;
+		printf("\nLa détection a duré %ld ticks d'horloge.\n", tTotal);
+	}
+
+	pause();
+
+}
+
+size_t plusGrandPrefixeCommun(char* mot1, char* mot2)
+{
 	size_t i = 0;
-	while (mot1[i] == mot2[i]) i++; 
+	while (mot1[i] == mot2[i]) i++;
 	return i;
 }
+
+void lecture(char phrase[MAX_SIZE+1])
+{
+	printf("\nVeuillez entrer la phrase à détecter : ");
+	// char phrase[MAX_SIZE+1] = {0};
+	int cmpt = 0;
+	char c;
+	while(cmpt < MAX_SIZE+1 && c != EOF && c != 10)
+	{
+		c = getchar();
+		phrase[cmpt++] = c;
+	}
+}
+
 
 /**
  * Change ASCII char (a-z) to array index
@@ -53,4 +105,3 @@ char* concat(const char *s1, const char *s2) {
 	strcat(result, s2);
 	return result;
 }
-
