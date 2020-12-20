@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "../header/io.h"
+#include "../header/utils.h"
 
 void clear(){
 	printf("\e[1;1H\e[2J");
@@ -95,6 +96,8 @@ void print_temps(int temps)
 
 void menu()
 {
+	clear();
+	clear();
 	int temps = 1;
 	int arbre = DETEC_TRIE;
 	char inp = 0;

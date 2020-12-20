@@ -3,16 +3,35 @@
 #include <time.h>
 
 #include "../header/utils.h"
-#include "../header/io.h"
-#include "../header/dawg.h"
-#include "../header/arbre.h"
+// #include "../header/io.h"
+// #include "../header/dawg.h"
+// #include "../header/arbre.h"
 
+void lecture(char phrase[MAX_SIZE+1])
+{
+	printf("\nVeuillez entrer la phrase à détecter : ");
+	int cmpt = 0;
+	getchar();
+	char c = 1;
+	while(cmpt < MAX_SIZE+1 && c != EOF && c != 10)
+	{
+		c = getchar();
+		if (c!=10)
+			phrase[cmpt++] = c;
+	}
+
+	char copy[MAX_SIZE+1] = {0};
+	for (int i=0; i<cmpt-2; i++)
+		copy[i] = phrase[i];
+
+	phrase = copy;
+}
 
 void detection(int arbre, int temps)
 {
 	clear();
 	clock_t tDebut, tTotal;
-	char phrase[MAX_SIZE] = {0};
+	char phrase[MAX_SIZE+1] = {0};
 
 	lecture(phrase);
 
@@ -47,18 +66,7 @@ size_t plusGrandPrefixeCommun(char* mot1, char* mot2)
 	return i;
 }
 
-void lecture(char phrase[MAX_SIZE+1])
-{
-	printf("\nVeuillez entrer la phrase à détecter : ");
-	// char phrase[MAX_SIZE+1] = {0};
-	int cmpt = 0;
-	char c;
-	while(cmpt < MAX_SIZE+1 && c != EOF && c != 10)
-	{
-		c = getchar();
-		phrase[cmpt++] = c;
-	}
-}
+
 
 
 /**

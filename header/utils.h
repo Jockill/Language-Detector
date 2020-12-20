@@ -3,8 +3,9 @@
 
 #define MAX_SIZE 2047
 
-
 #include <stdlib.h>
+#include "io.h"
+#include "arbre.h"
 
 void detection(int arbre, int temps);
 

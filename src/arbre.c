@@ -1,6 +1,7 @@
 #include "../header/arbre.h"
-#include "../header/utils.h"
-#include "../header/io.h"
+#include <string.h>
+// #include "../header/utils.h"
+// #include "../header/io.h"
 
 Arbre construct_trie(char *dict) {
 
@@ -132,23 +133,22 @@ void suppression_arbre(Arbre racine) {
 	free(racine);
 }
 
-void detec_trie(char phrase[MAX_SIZE])
+void detec_trie(char phrase[MAX_SIZE+1])
 {
 	// Initilisation des compteurs pour déterminer la langue
 	size_t cptr_fr = 0;
 	size_t cptr_eng = 0;
 	size_t cptr_germ = 0;
 
-	// Initilisation des dicos dans le "tri"
-	// #WARNING: construct_trie plutot ?
-	Arbre racine_fr = construct_trie("../dict/french-wordlist.txt");
-	Arbre racine_eng = construct_trie("../dict/english-wordlist.txt");
-	Arbre racine_germ = construct_trie("../dict/german-wordlist.txt");
+	// Initilisation des dicos dans les "trie"
+	Arbre racine_fr = construct_trie("./dict/french-wordlist.txt");
+	Arbre racine_eng = construct_trie("./dict/english-wordlist.txt");
+	Arbre racine_germ = construct_trie("./dict/german-wordlist.txt");
 
-	char phrase[MAX_SIZE+1] = lecture(phrase);
 
 	// Découpage de la phrase
-	size_t len = strlen(phrase);
+	// Pas utilisé
+	// size_t len = strlen(phrase);
 	char temp[] = " ";
 	char *mot = strtok(phrase, temp);
 	while(mot != NULL) {
@@ -159,9 +159,9 @@ void detec_trie(char phrase[MAX_SIZE])
 		cptr_germ = test_mot_germ(racine_germ, mot, cptr_germ);
 		mot = strtok(NULL, temp);
 	}
-	printf("%d\n", cptr_fr);
-	printf("%d\n", cptr_eng);
-	printf("%d\n", cptr_germ);
+	printf("%ld\n", cptr_fr);
+	printf("%ld\n", cptr_eng);
+	printf("%ld\n", cptr_germ);
 
 	// Affichage de la langue
 	print_langue(cptr_fr, cptr_eng, cptr_germ);

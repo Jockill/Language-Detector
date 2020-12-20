@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "../header/io.h"
 #include "../header/utils.h"
 #include "../header/hashmap.h"
 #include "../header/arbre.h"
-#include "../header/io.h"
+#include "../header/stack.h"
 // #include "arbre.c"
 
 #define MAX_SIZE 2047
