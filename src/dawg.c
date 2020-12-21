@@ -9,6 +9,9 @@
 #define LASTFR 100
 #define LASTEN 10
 #define LASTDE 1
+#define LANG_FR 1
+#define LANG_EN 2
+#define LANG_DE 3
 #define N 26
 #define TAILLE 256
 
@@ -239,8 +242,8 @@ dawg *construct_dawg(const char *pathname) {
 	return nouveau_dawg;
 }
 
-// Fonction de test des mots en FR ainsi obtenus et retourne un compteur
-float dawg_test_mot_fr(dawg *racine, char *mot, int last)
+
+float dawg_test_mot_fr(dawg* racine, char *mot, int last)
 {
 	if (recherche_mot_dawg(racine, mot) && last%1000 >= LASTFR)
 		return 1;
@@ -250,8 +253,7 @@ float dawg_test_mot_fr(dawg *racine, char *mot, int last)
 		return 0;
 }
 
-// Fonction de test des mots en ENG ainsi obtenus et retourne un compteur
-float dawg_test_mot_eng(dawg *racine, char *mot, int last)
+float dawg_test_mot_eng(dawg* racine, char *mot, int last)
 {
 	if (recherche_mot_dawg(racine, mot) && last%100 >= LASTEN)
 		return 1;
@@ -261,8 +263,7 @@ float dawg_test_mot_eng(dawg *racine, char *mot, int last)
 		return 0;
 }
 
-// Fonction de test des mots en GERM ainsi obtenus et retourne un compteur
-float dawg_test_mot_germ(dawg *racine, char *mot, int last)
+float dawg_test_mot_germ(dawg* racine, char *mot, int last)
 {
 	if (recherche_mot_dawg(racine, mot) && last%10 >= LASTDE)
 		return 1;
@@ -272,8 +273,7 @@ float dawg_test_mot_germ(dawg *racine, char *mot, int last)
 		return 0;
 }
 
-
-void detec_dawg(char phrase[MAX_SIZE+1], int temps)
+void dawg_lecture(dawg *racine_fr, dawg *racine_eng, dawg *racine_germ, char phrase[MAX_SIZE+1])
 {
 	// Initilisation des compteurs pour déterminer la langue
 	float cptr_fr = 0;
@@ -281,27 +281,14 @@ void detec_dawg(char phrase[MAX_SIZE+1], int temps)
 	float cptr_germ = 0;
 	float tmp = 0;
 	int last = 0;
-	clock_t tdInit, ttInit;
-	clock_t tdLecture, ttLecture;
-	clock_t tdDel, ttDel;
+	int current = 0;
 
-	if (temps == 1)
-		tdInit = clock();
-	// Initilisation des dicos dans les "trie"
-	dawg *racine_fr = construct_dawg("dict/french-wordlist.txt");
-	dawg *racine_eng = construct_dawg("dict/english-wordlist.txt");
-	dawg *racine_germ = construct_dawg("dict/german-wordlist.txt");
-	if (temps == 1)
-		ttInit = clock()-tdInit;
-
-	if (temps == 1)
-		tdLecture = clock();
 	// Découpage de la phrase
 	char temp[] = " ";
 	char *mot = strtok(phrase, temp);
 	while(mot != NULL) {
-		last = 0;
 		tmp = 0;
+		current = 0;
 		tmp = dawg_test_mot_fr(racine_fr, mot, last);
 		if (tmp > 0)
 		{
@@ -321,15 +308,34 @@ void detec_dawg(char phrase[MAX_SIZE+1], int temps)
 			last += LASTDE;
 		}
 		mot = strtok(NULL, temp);
+		last = current;
 	}
-	if (temps == 1)
-		ttLecture = clock()-tdLecture;
 
 	// Affichage de la langue
 	print_langue(cptr_fr, cptr_eng, cptr_germ);
+}
 
-	if (temps == 1)
-		tdDel = clock();
+void detec_dawg(char phrase[MAX_SIZE+1], int temps)
+{
+
+	clock_t tdInit, ttInit;
+	clock_t tdLecture, ttLecture;
+	clock_t tdDel, ttDel;
+
+	if (temps == 1) tdInit = clock();
+	// Initilisation des dicos dans les dawg
+	dawg *racine_fr = construct_dawg("dict/french-wordlist.txt");
+	dawg *racine_eng = construct_dawg("dict/english-wordlist.txt");
+	dawg *racine_germ = construct_dawg("dict/german-wordlist.txt");
+	if (temps == 1) ttInit = clock()-tdInit;
+
+
+	if (temps == 1)	tdLecture = clock();
+	dawg_lecture(racine_fr, racine_eng, racine_germ, phrase);
+	if (temps == 1) ttLecture = clock()-tdLecture;
+
+
+	if (temps == 1) tdDel = clock();
 	// Libération de l'espace mémoire alloué
 	suppression_dawg(racine_fr);
 	suppression_dawg(racine_eng);
@@ -337,9 +343,6 @@ void detec_dawg(char phrase[MAX_SIZE+1], int temps)
 	if (temps == 1)
 	{
 		ttDel = clock() - tdDel;
-		printf("*****TEMPS*****\n");
-		printf("Construction : %ld s.\n", ttInit/CLOCKS_PER_SEC);
-		printf("Détection    : %ld s.\n", ttLecture/CLOCKS_PER_SEC);
-		printf("Suppression  : %ld s.\n", ttDel/CLOCKS_PER_SEC);
+		print_listeTemps(ttInit, ttLecture, ttDel);
 	}
 }

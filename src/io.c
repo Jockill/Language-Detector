@@ -103,6 +103,14 @@ void print_temps(int temps)
 	printf("====================================================\n");
 }
 
+void print_listeTemps(clock_t init, clock_t detec, clock_t del)
+{
+	printf("\n*****TEMPS*****\n");
+	printf("Construction : %ld s.\n", init/CLOCKS_PER_SEC);
+	printf("Détection    : %ld s.\n", detec/CLOCKS_PER_SEC);
+	printf("Suppression  : %ld s.\n", del/CLOCKS_PER_SEC);
+}
+
 void menu()
 {
 	clear();

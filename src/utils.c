@@ -38,7 +38,7 @@ void detection(int arbre, int temps)
 
 
 	if (arbre == DETEC_TRIE)
-		detec_trie(phrase);
+		detec_trie(phrase, temps);
 	else if (arbre == DETEC_DAWG)
 		detec_dawg(phrase, temps);
 
@@ -50,7 +50,7 @@ void detection(int arbre, int temps)
 	}
 
 	pause();
-
+	clear();
 }
 
 size_t plusGrandPrefixeCommun(char* mot1, char* mot2) {
@@ -59,9 +59,6 @@ size_t plusGrandPrefixeCommun(char* mot1, char* mot2) {
 		i++;
 	return i;
 }
-
-
-
 
 /**
  * Change ASCII char (a-z) to array index
