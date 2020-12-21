@@ -156,10 +156,9 @@ void sommet_insertion(dawg *dawg, char *mot) {
 		sommet_droit -> mot_valide = false;
 		sommet_droit -> id = dawg -> id_suivant++;
 		sommet_droit -> fin = false;
-
-		Arete *nouvelle_arete = (Arete*)malloc(sizeof(Arete));
+		
 		size_t index;
-
+		Arete *nouvelle_arete = (Arete*)malloc(sizeof(Arete));
 		if(nouvelle_arete == NULL) {
 			perror("Nouvelle arête Malloc ");
 			exit(EXIT_FAILURE);

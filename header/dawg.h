@@ -28,8 +28,8 @@
 typedef struct Sommet {
 	struct Sommet *tab[N]; 	/*!< Arêtes sortantes du sommet. */
 	bool mot_valide; 	/*!< Bool pur savoir si le mot actuel est dans le dictionnaire. */
-   	size_t id;		/*!< Représente l'id du sommet actuel. */
-   	bool fin;		/*!< Bool pour savoit si sommet est final. */
+   size_t id;		/*!< Représente l'id du sommet actuel. */
+   bool fin;		/*!< Bool pour savoit si sommet est final. */
 } Sommet;
 
 /*!
