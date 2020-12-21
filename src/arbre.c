@@ -4,6 +4,10 @@
 #define LASTFR 100
 #define LASTEN 10
 #define LASTDE 1
+#define LANG_FR 1
+#define LANG_EN 2
+#define LANG_DE 3
+
 
 Arbre construct_trie(char *dict) {
 
@@ -97,33 +101,18 @@ bool recherche_mot_arbre(Arbre racine, char *message) {
 	return result;
 }
 
-// Fonction de test des mots en FR ainsi obtenus et retourne un compteur
-float trie_test_mot_fr(Arbre racine, char *mot, int last)
-{
-	if (recherche_mot_arbre(racine, mot) && last%1000 >= LASTFR)
-		return 1;
-	else if (recherche_mot_arbre(racine, mot))
-		return 0.5;
-	else
-		return 0;
-}
 
-// Fonction de test des mots en ENG ainsi obtenus et retourne un compteur
-float trie_test_mot_eng(Arbre racine, char *mot, int last)
+float trie_test_mot(Arbre racine, char *mot, int last, int langue)
 {
-	if (recherche_mot_arbre(racine, mot) && last%100 >= LASTEN)
-		return 1;
-	else if (recherche_mot_arbre(racine, mot))
-		return 0.5;
-	else
-		return 0;
-}
-
-// Fonction de test des mots en GERM ainsi obtenus et retourne un compteur
-float trie_test_mot_germ(Arbre racine, char *mot, int last)
-{
-	if (recherche_mot_arbre(racine, mot) && last%10 >= LASTDE)
-		return 1;
+	if (langue == LANG_FR)
+		if (recherche_mot_arbre(racine, mot) && last%1000 >= LASTFR)
+			return 1;
+	else if (langue == LANG_EN)
+		if (recherche_mot_arbre(racine, mot) && last%100 >= LASTEN)
+			return 1;
+	else if (langue == LANG_DE)
+		if (recherche_mot_arbre(racine, mot) && last%10 >= LASTDE)
+			return 1;
 	else if (recherche_mot_arbre(racine, mot))
 		return 0.5;
 	else
@@ -142,7 +131,7 @@ void suppression_arbre(Arbre racine) {
 	free(racine);
 }
 
-void detec_trie(char phrase[MAX_SIZE+1])
+void trie_lecture(char phrase[MAX_SIZE+1])
 {
 	// Initilisation des compteurs pour déterminer la langue
 	float cptr_fr = 0;
@@ -151,32 +140,25 @@ void detec_trie(char phrase[MAX_SIZE+1])
 	float tmp = 0;
 	int last = 0;
 
-
-	// Initilisation des dicos dans les "trie"
-	Arbre racine_fr = construct_trie("./dict/french-wordlist.txt");
-	Arbre racine_eng = construct_trie("./dict/english-wordlist.txt");
-	Arbre racine_germ = construct_trie("./dict/german-wordlist.txt");
-
-
 	// Découpage de la phrase
 	char temp[] = " ";
 	char *mot = strtok(phrase, temp);
 	while(mot != NULL) {
 		last = 0;
 		tmp = 0;
-		tmp = trie_test_mot_fr(racine_fr, mot, last);
+		tmp = trie_test_mot(racine_fr, mot, last, LANG_FR);
 		if (tmp > 0)
 		{
 			cptr_fr += tmp;
 			last += LASTFR;
 		}
-		tmp = trie_test_mot_eng(racine_eng, mot, last);
+		tmp = trie_test_mot(racine_eng, mot, last, LANG_EN);
 		if (tmp > 0)
 		{
 			cptr_eng += tmp;
 			last += LASTEN;
 		}
-		tmp = trie_test_mot_germ(racine_germ, mot, last);
+		tmp = trie_test_mot(racine_germ, mot, last, LANG_DE);
 		if (tmp > 0)
 		{
 			cptr_germ += tmp;
@@ -184,11 +166,39 @@ void detec_trie(char phrase[MAX_SIZE+1])
 		}
 		mot = strtok(NULL, temp);
 	}
+
 	// Affichage de la langue
 	print_langue(cptr_fr, cptr_eng, cptr_germ);
+}
 
+void detec_trie(char phrase[MAX_SIZE+1], int temps)
+{
+
+	clock_t tdInit, ttInit;
+	clock_t tdLecture, ttLecture;
+	clock_t tdDel, ttDel;
+
+	if (temps == 1) tdInit = clock();
+	// Initilisation des dicos dans les "trie"
+	Arbre racine_fr = construct_trie("./dict/french-wordlist.txt");
+	Arbre racine_eng = construct_trie("./dict/english-wordlist.txt");
+	Arbre racine_germ = construct_trie("./dict/german-wordlist.txt");
+	if (temps == 1) ttInit = clock()-tdInit;
+
+	if (temps == 1) tdLecture = clock();
+	//Lecture et detection de la langue de la phrase
+	trie_lecture(phrase);
+	if (temps == 1)	ttLecture = clock()-tdLecture;
+
+
+	if (temps == 1)	tdDel = clock();
 	// Libération de l'espace mémoire alloué
 	suppression_arbre(racine_fr); // Dico fr
 	suppression_arbre(racine_eng); // Dico eng
 	suppression_arbre(racine_germ); // Dico germ
+	if (temps == 1)
+	{
+		ttDel = clock() - tdDel;
+		print_listeTemps(ttInit, ttLecture, ttDel);
+	}
 }
