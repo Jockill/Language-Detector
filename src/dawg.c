@@ -16,7 +16,7 @@
 #define TAILLE 256
 
 dawg *initilisation_dawg(void) {
-	// Init nouveau dawg 
+	// Init nouveau dawg
 	dawg *nouveau = (dawg*)malloc(sizeof(dawg));
 	if (nouveau == NULL) {
 		perror("Malloc Dawg");
@@ -36,7 +36,7 @@ dawg *initilisation_dawg(void) {
 	memset(nouveau -> racine -> tab, 0, sizeof nouveau -> racine -> tab);
 
 	// Init hashmap
-	if(hashmap_create(2, &(nouveau -> hashmap)) != 0) {
+	if(hashmap_create(1024, &(nouveau -> hashmap)) != 0) {
 		fprintf(stderr, "Hashmap problème\n");
 		exit(EXIT_FAILURE);
 	}
@@ -60,10 +60,10 @@ char *confection_cle(Sommet *sommet) {
 
 				Sommet *sommet_droit = sommet -> tab[cptr];
 
-				int test_retour = snprintf(buf, sizeof buf, "%c-%ld  ", label, sommet_droit -> id); 
+				int test_retour = snprintf(buf, sizeof buf, "%c-%ld  ", label, sommet_droit -> id);
 				if(test_retour < 0 || test_retour >= N) {
-					perror("snprintf"); 
-					exit(EXIT_FAILURE); 
+					perror("snprintf");
+					exit(EXIT_FAILURE);
 				}
 
 				if(cle != NULL) {
@@ -156,7 +156,7 @@ void sommet_insertion(dawg *dawg, char *mot) {
 		sommet_droit -> mot_valide = false;
 		sommet_droit -> id = dawg -> id_suivant++;
 		sommet_droit -> fin = false;
-		
+
 		size_t index;
 		Arete *nouvelle_arete = (Arete*)malloc(sizeof(Arete));
 		if(nouvelle_arete == NULL) {
@@ -187,9 +187,9 @@ void sommet_insertion(dawg *dawg, char *mot) {
 bool recherche_mot_dawg(dawg *dawg, char *mot) {
 	Sommet *sommet;
 	size_t index;
-	bool result = false; 
+	bool result = false;
 	sommet = dawg -> racine;
-	
+
 	while(*mot) {
 		index = ascii_to_index(*mot);
 		Sommet *prochain_sommet = sommet -> tab[index];
@@ -197,15 +197,15 @@ bool recherche_mot_dawg(dawg *dawg, char *mot) {
 			return result;
 		}
 		sommet = prochain_sommet;
-		mot++; 
+		mot++;
 	}
 
 	if(sommet -> mot_valide) {
-		result = true; 
+		result = true;
 		return result;
 	}
 
-	result = sommet -> mot_valide; 
+	result = sommet -> mot_valide;
 	return result;
 }
 
