@@ -13,9 +13,11 @@
 #define LANG_EN 2
 #define LANG_DE 3
 #define N 26
+#define TAILLE 256
 
 dawg *initilisation_dawg(void) {
-	dawg *nouveau = malloc(sizeof *nouveau);
+	// Init nouveau dawg 
+	dawg *nouveau = (dawg*)malloc(sizeof(dawg));
 	if (nouveau == NULL) {
 		perror("Malloc Dawg");
 		exit(EXIT_FAILURE);
@@ -23,48 +25,46 @@ dawg *initilisation_dawg(void) {
 	nouveau -> id_suivant = 0;
 	nouveau -> dernier_sommet = NULL;
 
-	nouveau -> racine = malloc(sizeof *(nouveau -> racine));
+	// Init racine
+	nouveau -> racine = (Sommet*)malloc(sizeof(Sommet));
 	if(nouveau -> racine == NULL) {
 		perror("Malloc racine");
 		exit(EXIT_FAILURE);
 	}
 	nouveau -> racine -> id = nouveau -> id_suivant++;
 	nouveau -> racine -> mot_valide = false;
-
 	memset(nouveau -> racine -> tab, 0, sizeof nouveau -> racine -> tab);
 
 	// Init hashmap
-	if(hashmap_create(1024, &(nouveau -> hashmap)) != 0) {
+	if(hashmap_create(2, &(nouveau -> hashmap)) != 0) {
 		fprintf(stderr, "Hashmap problème\n");
 		exit(EXIT_FAILURE);
 	}
 
 	// Init stack
-	nouveau -> pile = new_stack(128);
+	nouveau -> pile = new_stack(TAILLE);
 
 	return nouveau;
 }
 
 char *confection_cle(Sommet *sommet) {
-	char buf[128];
+	char buf[TAILLE];
 	char *cle = NULL;
 
-	// Si sommet est final
-	if((sommet -> fin == true)) {
-		cle = concat("", ".");
-	}
-
-	// Sinon cas des arêtes sortantes
-	else {
+	// Si sommet est une arêtes sortantes
+	if(sommet -> fin == false) {
 		size_t cptr = 0;
-		//for (size_t i = 0; i < N; i++) {
 		while(cptr < N) {
 			if(sommet -> tab[cptr] != NULL) {
-				char label = cptr + 'a';
+				char label = cptr;
 
 				Sommet *sommet_droit = sommet -> tab[cptr];
 
-				snprintf(buf, sizeof buf, "%c-%ju  ", label, sommet_droit -> id);
+				int test_retour = snprintf(buf, sizeof buf, "%c-%ld  ", label, sommet_droit -> id); 
+				if(test_retour < 0 || test_retour >= N) {
+					perror("snprintf"); 
+					exit(EXIT_FAILURE); 
+				}
 
 				if(cle != NULL) {
 					char *temp = cle;
@@ -78,6 +78,10 @@ char *confection_cle(Sommet *sommet) {
 			}
 			cptr++;
 		}
+	}
+	// Sinon
+	else {
+		cle = concat("", ".");
 	}
 
 	return cle;
@@ -115,7 +119,13 @@ void minimisation(dawg *dawg, size_t taille) {
 void sommet_insertion(dawg *dawg, char *mot) {
 
 	// Etape 1 : Préfixe commun
-	size_t taille_prefixe = dawg -> dernier_sommet == NULL ? 0 : plusGrandPrefixeCommun(dawg->dernier_sommet, mot);
+	size_t taille_prefixe;
+	if(dawg -> dernier_sommet == NULL) {
+		taille_prefixe = 0;
+	}
+	else {
+		taille_prefixe = plusGrandPrefixeCommun(dawg -> dernier_sommet, mot);
+	}
 
 	// Etape 2 : Minimisation
 	minimisation(dawg, taille_prefixe);
@@ -128,18 +138,16 @@ void sommet_insertion(dawg *dawg, char *mot) {
 	if(is_stack_empty(dawg -> pile) == true) {
 		sommet_gauche = dawg -> racine;
 	}
-
 	else {
-		// Caster en mode arete
-		Arete *temp = ((Arete *)(stack_peek(dawg -> pile)));
+		Arete *temp = ((Arete*)(stack_peek(dawg -> pile)));
 		sommet_gauche = temp -> sommet_droit;
 	}
 
 	for(char *lettre = suffixe_non_commun; *lettre != '\0'; lettre++) {
 		sommet_gauche -> fin = false;
 
-		Sommet *sommet_droit = malloc(sizeof *sommet_droit);
-		if (sommet_droit == NULL) {
+		Sommet *sommet_droit = (Sommet*)malloc(sizeof(Sommet));
+		if(sommet_droit == NULL) {
 			perror("Sommet droit malloc");
 			exit(EXIT_FAILURE);
 		}
@@ -148,10 +156,9 @@ void sommet_insertion(dawg *dawg, char *mot) {
 		sommet_droit -> mot_valide = false;
 		sommet_droit -> id = dawg -> id_suivant++;
 		sommet_droit -> fin = false;
-
-		Arete *nouvelle_arete = malloc(sizeof *nouvelle_arete);
+		
 		size_t index;
-
+		Arete *nouvelle_arete = (Arete*)malloc(sizeof(Arete));
 		if(nouvelle_arete == NULL) {
 			perror("Nouvelle arête Malloc ");
 			exit(EXIT_FAILURE);
@@ -180,24 +187,26 @@ void sommet_insertion(dawg *dawg, char *mot) {
 bool recherche_mot_dawg(dawg *dawg, char *mot) {
 	Sommet *sommet;
 	size_t index;
-
+	bool result = false; 
 	sommet = dawg -> racine;
-	char *lettre = &mot[0];
-
-	for(; *lettre != '\0'; lettre++) {
-		index = ascii_to_index(*lettre);
+	
+	while(*mot) {
+		index = ascii_to_index(*mot);
 		Sommet *prochain_sommet = sommet -> tab[index];
 		if (prochain_sommet == NULL) {
-			return false;
+			return result;
 		}
 		sommet = prochain_sommet;
+		mot++; 
 	}
 
 	if(sommet -> mot_valide) {
-		return true;
+		result = true; 
+		return result;
 	}
 
-	return sommet -> mot_valide;
+	result = sommet -> mot_valide; 
+	return result;
 }
 
 int suppression_hasmap(void *const hashmap, struct hashmap_element_s *const element) {
@@ -217,7 +226,7 @@ void suppression_dawg(dawg *dawg) {
 }
 
 dawg *construct_dawg(const char *pathname) {
-	char buf[128];
+	char buf[TAILLE];
 	dawg *nouveau_dawg = initilisation_dawg();
 	FILE *fd = fopen(pathname, "r");
 
@@ -226,10 +235,7 @@ dawg *construct_dawg(const char *pathname) {
 		sommet_insertion(nouveau_dawg, buf);
 	}
 
-
-	// Obligatoire
 	minimisation(nouveau_dawg, 0);
-
 	fclose(fd);
 
 	return nouveau_dawg;
