@@ -96,10 +96,13 @@ void suppression_arbre(Arbre racine);
 
 /*!
    \brief Lis une phrase puis détermine sa langue
+   \param [in] Arbre racine_fr Racine du trie en francais
+   \param [in] Arbre racine_eng Racine du trie en anglais
+   \param [in] Arbre racine_germ Racine du trie en allemand
    \param [in] char phrase[MAX_SIZE+1] Phrase à détecter
    \return NONE
 */
-void trie_lecture(char phrase[MAX_SIZE+1]);
+void trie_lecture(Arbre racine_fr, Arbre racine_eng, Arbre racine_germ, char phrase[MAX_SIZE+1]);
 
 /*!
    \brief Cree un trie, test la langue de <phrase> puis supprime le trie.

@@ -4,6 +4,8 @@
 #define DETEC_TRIE 0
 #define DETEC_DAWG 1
 
+#include <time.h>
+
 //Pour la doc faudra attendre juste un poil hein.
 
 void clear();
@@ -23,6 +25,8 @@ void print_quit();
 void print_start();
 
 void print_temps(int temps);
+
+void print_listeTemps(clock_t init, clock_t detec, clock_t del);
 
 void menu();
 

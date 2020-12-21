@@ -102,17 +102,30 @@ bool recherche_mot_arbre(Arbre racine, char *message) {
 }
 
 
-float trie_test_mot(Arbre racine, char *mot, int last, int langue)
+float trie_test_mot_fr(Arbre racine, char *mot, int last)
 {
-	if (langue == LANG_FR)
-		if (recherche_mot_arbre(racine, mot) && last%1000 >= LASTFR)
-			return 1;
-	else if (langue == LANG_EN)
-		if (recherche_mot_arbre(racine, mot) && last%100 >= LASTEN)
-			return 1;
-	else if (langue == LANG_DE)
-		if (recherche_mot_arbre(racine, mot) && last%10 >= LASTDE)
-			return 1;
+	if (recherche_mot_arbre(racine, mot) && last%1000 >= LASTFR)
+		return 1;
+	else if (recherche_mot_arbre(racine, mot))
+		return 0.5;
+	else
+		return 0;
+}
+
+float trie_test_mot_eng(Arbre racine, char *mot, int last)
+{
+	if (recherche_mot_arbre(racine, mot) && last%100 >= LASTEN)
+		return 1;
+	else if (recherche_mot_arbre(racine, mot))
+		return 0.5;
+	else
+		return 0;
+}
+
+float trie_test_mot_germ(Arbre racine, char *mot, int last)
+{
+	if (recherche_mot_arbre(racine, mot) && last%10 >= LASTDE)
+		return 1;
 	else if (recherche_mot_arbre(racine, mot))
 		return 0.5;
 	else
@@ -131,7 +144,7 @@ void suppression_arbre(Arbre racine) {
 	free(racine);
 }
 
-void trie_lecture(char phrase[MAX_SIZE+1])
+void trie_lecture(Arbre racine_fr, Arbre racine_eng, Arbre racine_germ, char phrase[MAX_SIZE+1])
 {
 	// Initilisation des compteurs pour déterminer la langue
 	float cptr_fr = 0;
@@ -146,19 +159,19 @@ void trie_lecture(char phrase[MAX_SIZE+1])
 	while(mot != NULL) {
 		last = 0;
 		tmp = 0;
-		tmp = trie_test_mot(racine_fr, mot, last, LANG_FR);
+		tmp = trie_test_mot_fr(racine_fr, mot, last);
 		if (tmp > 0)
 		{
 			cptr_fr += tmp;
 			last += LASTFR;
 		}
-		tmp = trie_test_mot(racine_eng, mot, last, LANG_EN);
+		tmp = trie_test_mot_eng(racine_eng, mot, last);
 		if (tmp > 0)
 		{
 			cptr_eng += tmp;
 			last += LASTEN;
 		}
-		tmp = trie_test_mot(racine_germ, mot, last, LANG_DE);
+		tmp = trie_test_mot_germ(racine_germ, mot, last);
 		if (tmp > 0)
 		{
 			cptr_germ += tmp;
@@ -187,15 +200,15 @@ void detec_trie(char phrase[MAX_SIZE+1], int temps)
 
 	if (temps == 1) tdLecture = clock();
 	//Lecture et detection de la langue de la phrase
-	trie_lecture(phrase);
+	trie_lecture(racine_fr, racine_eng, racine_germ, phrase);
 	if (temps == 1)	ttLecture = clock()-tdLecture;
 
 
 	if (temps == 1)	tdDel = clock();
 	// Libération de l'espace mémoire alloué
-	suppression_arbre(racine_fr); // Dico fr
-	suppression_arbre(racine_eng); // Dico eng
-	suppression_arbre(racine_germ); // Dico germ
+	suppression_arbre(racine_fr);
+	suppression_arbre(racine_eng);
+	suppression_arbre(racine_germ);
 	if (temps == 1)
 	{
 		ttDel = clock() - tdDel;
