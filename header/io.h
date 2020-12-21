@@ -1,3 +1,10 @@
+/*!
+ \file io.h
+ \brief Header contenant les fonctions d'affichage.
+ \author JOCHYMSKI Hugo
+ \date Decembre/2020
+*/
+
 #ifndef __IO_H
 #define __IO_H
 
@@ -73,7 +80,7 @@ void print_listeTemps(clock_t init, clock_t detec, clock_t del);
 
 /*!
   \function menu
-  \brief Affiche le menu principal 
+  \brief Affiche le menu principal
 */
 void menu();
 
