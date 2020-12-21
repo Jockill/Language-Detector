@@ -65,18 +65,37 @@ Arbre noeud_initialisation(void);
 void noeud_insertion(Noeud *racine, char *message);
 
 /*!
-   \brief Test si un mot est présent dans un trie.
-   \param [in] Arbre racine Racine du trie.
+   \brief Test si <mot> est en francais
+   \param [in] dawg* racine Racine du trie
    \param [in] char* mot Mot à tester
    \param [in] int last Langue(s) du dernier mot testé
-   \param [in] int langue Langue à tester
-   \note Les deux derniers parametres ne sont utiles qu'a des fins de stat pour\
-   être plus précis sur le choix final de la langue.
-   \return 1 si <mot> est en <langue> et que le précédent également, \
-   0.5 si <mot> est en <langue> mais que le précédent non, \
-   0 si <mot> n'est pas en <langue>.
+   \return 1 si <mot> est en <langue> et que le dernier aussi, \
+   0.5 si <mot> est en <langue> mais que le dernier non, \
+   0 si <mot> n'est pas en <langue>
 */
-float trie_test_mot(Arbre racine, char *mot, int last, int langue);
+float trie_test_mot_fr(Arbre racine, char *mot, int last);
+
+/*!
+   \brief Test si <mot> est en anglais
+   \param [in] Arbre racine Racine du trie
+   \param [in] char* mot Mot à tester
+   \param [in] int last Langue(s) du dernier mot testé
+   \return 1 si <mot> est en <langue> et que le dernier aussi, \
+   0.5 si <mot> est en <langue> mais que le dernier non, \
+   0 si <mot> n'est pas en <langue>
+*/
+float trie_test_mot_eng(Arbre racine, char *mot, int last);
+
+/*!
+   \brief Test si <mot> est en allemand
+   \param [in] Arbre racine Racine du trie
+   \param [in] char* mot Mot à tester
+   \param [in] int last Langue(s) du dernier mot testé
+   \return 1 si <mot> est en <langue> et que le dernier aussi, \
+   0.5 si <mot> est en <langue> mais que le dernier non, \
+   0 si <mot> n'est pas en <langue>
+*/
+float trie_test_mot_germ(Arbre racine, char *mot, int last);
 
 
 /*!
