@@ -5,7 +5,7 @@ HEADPATH = ./header/
 SRCPATH = ./src/
 DOCPATH = ./doc/
 
-main: $(OBJPATH)main.o $(OBJPATH)stack.o $(OBJPATH)utils.o $(OBJPATH)io.o $(OBJPATH)arbre.o
+main: $(OBJPATH)main.o $(OBJPATH)stack.o $(OBJPATH)utils.o $(OBJPATH)io.o $(OBJPATH)arbre.o $(OBJPATH)dawg.o
 	gcc $^ $(FLAGS) -o languageDetector
 
 

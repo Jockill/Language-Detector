@@ -57,17 +57,26 @@ void print_help()
 	printf("Voici l'aide\n");
 }
 
-void print_langue(size_t cptr_fr, size_t cptr_eng, size_t cptr_germ)
+void print_langue(float cptr_fr, float cptr_eng, float cptr_germ)
 {
-	if(cptr_fr > cptr_eng && cptr_fr > cptr_germ)
-	printf("La langue détectée est le français.\n");
+	float total = cptr_fr + cptr_eng + cptr_germ;
+
+	//Erreurs lors de la compilation, impossible d'échapper correctement le '%'
+	if (cptr_fr == cptr_eng)
+		printf("La phrase peut etre en francais (50%s) ou en anglais (50%s)\n", "%", "%");
+	else if (cptr_fr == cptr_germ)
+		printf("La phrase peut etre en francais (50%s) ou en allemand (50%s)\n", "%", "%");
+	else if (cptr_germ == cptr_eng)
+		printf("La phrase peut etre en allemand (50%s) ou en anglais (50%s)\n", "%", "%");
+	else if(cptr_fr > cptr_eng && cptr_fr > cptr_germ)
+		printf("La phrase est en francais (%f %s de confiance).\n", ((float)cptr_fr/total)*100, "%");
 	else if(cptr_eng > cptr_fr && cptr_eng > cptr_germ)
-	printf("La langue détectée est l'anglais.\n");
+		printf("La phrase est en anglais (%f %s de confiance).\n", ((float)cptr_eng/total)*100, "%");
 	else if(cptr_germ > cptr_fr && cptr_germ > cptr_eng)
-	printf("La langue détectée est l'allemand.\n");
-	// Tous les compteurs à zéro : langue inconnue
+		printf("La phrase est en allemand (%f %s de confiance).\n", ((float)cptr_germ/total)*100, "%");
+	// langue inconnue
 	else
-	printf("La langue utilisée n'est pas disponible pour le moment.\n");
+		printf("Nous ne sommes pas sur d'avoir correctement détecté la langue.\n");
 }
 
 void print_quit()
@@ -97,13 +106,13 @@ void print_temps(int temps)
 void menu()
 {
 	clear();
-	clear();
 	int temps = 1;
 	int arbre = DETEC_TRIE;
 	char inp = 0;
 
 	do
 	{
+		clear();
 		clear();
 		switch (inp)
 		{

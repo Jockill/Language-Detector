@@ -1,260 +1,338 @@
-//#include "../header/dawg.h"
-// #include "../header/utils.h"
+#include "../header/dawg.h"
+#include "../header/utils.h"
 #include "../header/stack.h"
-#include "../src/utils.c"
+#include "../header/hashmap.h"
 
 #include <stdbool.h>
-#define N 26 
-#define MOT 100
+#include <time.h>
+
+#define LASTFR 100
+#define LASTEN 10
+#define LASTDE 1
+#define N 26
+
+dawg *initilisation_dawg(void) {
+	dawg *nouveau = malloc(sizeof *nouveau);
+	if (nouveau == NULL) {
+		perror("Malloc Dawg");
+		exit(EXIT_FAILURE);
+	}
+	nouveau -> id_suivant = 0;
+	nouveau -> dernier_sommet = NULL;
+
+	nouveau -> racine = malloc(sizeof *(nouveau -> racine));
+	if(nouveau -> racine == NULL) {
+		perror("Malloc racine");
+		exit(EXIT_FAILURE);
+	}
+	nouveau -> racine -> id = nouveau -> id_suivant++;
+	nouveau -> racine -> mot_valide = false;
+
+	memset(nouveau -> racine -> tab, 0, sizeof nouveau -> racine -> tab);
+
+	// Init hashmap
+	if(hashmap_create(1024, &(nouveau -> hashmap)) != 0) {
+		fprintf(stderr, "Hashmap problème\n");
+		exit(EXIT_FAILURE);
+	}
+
+	// Init stack
+	nouveau -> pile = new_stack(128);
+
+	return nouveau;
+}
+
+char *confection_cle(Sommet *sommet) {
+	char buf[128];
+	char *cle = NULL;
+
+	// Si sommet est final
+	if((sommet -> fin == true)) {
+		cle = concat("", ".");
+	}
+
+	// Sinon cas des arêtes sortantes
+	else {
+		size_t cptr = 0;
+		//for (size_t i = 0; i < N; i++) {
+		while(cptr < N) {
+			if(sommet -> tab[cptr] != NULL) {
+				char label = cptr + 'a';
+
+				Sommet *sommet_droit = sommet -> tab[cptr];
+
+				snprintf(buf, sizeof buf, "%c-%ju  ", label, sommet_droit -> id);
+
+				if(cle != NULL) {
+					char *temp = cle;
+					cle = concat(temp, buf);
+					free(temp);
+				}
+
+				else {
+					cle = concat("", buf);
+				}
+			}
+			cptr++;
+		}
+	}
+
+	return cle;
+}
+
+void minimisation(dawg *dawg, size_t taille) {
+	size_t index;
+
+	while((size_t)stack_size(dawg -> pile) > taille) {
+		// Dépilée la pile, nommé a la nouvelle arête
+		Arete *a = stack_pop(dawg -> pile);
+
+		// Vérifier si sommets sont équivalents
+		char *cle1 = confection_cle(a -> sommet_droit);
+		Sommet *sommet_trouve = hashmap_get(&dawg -> hashmap, cle1, strlen(cle1));
+		free(cle1);
+
+		// Si le cas
+		if(sommet_trouve != NULL) {
+			index = ascii_to_index(a -> label);
+			a -> sommet_gauche -> tab[index] = sommet_trouve;
+			free(a -> sommet_droit);
+		}
+
+		// Sinon mettre nouveau sommet dans la hashmap
+		else {
+			char *cle2 = confection_cle(a -> sommet_droit);
+			hashmap_put(&dawg -> hashmap, cle2, strlen(cle2), a -> sommet_droit);
+		}
+
+		free(a);
+	}
+}
+
+void sommet_insertion(dawg *dawg, char *mot) {
+
+	// Etape 1 : Préfixe commun
+	size_t taille_prefixe = dawg -> dernier_sommet == NULL ? 0 : plusGrandPrefixeCommun(dawg->dernier_sommet, mot);
+
+	// Etape 2 : Minimisation
+	minimisation(dawg, taille_prefixe);
+
+	// Etape 3 : Ajout du suffixe non commun
+	char *suffixe_non_commun = &mot[taille_prefixe];
+	Sommet *sommet_gauche;
+
+	// Ajout du mot à la pile
+	if(is_stack_empty(dawg -> pile) == true) {
+		sommet_gauche = dawg -> racine;
+	}
+
+	else {
+		// Caster en mode arete
+		Arete *temp = ((Arete *)(stack_peek(dawg -> pile)));
+		sommet_gauche = temp -> sommet_droit;
+	}
+
+	for(char *lettre = suffixe_non_commun; *lettre != '\0'; lettre++) {
+		sommet_gauche -> fin = false;
+
+		Sommet *sommet_droit = malloc(sizeof *sommet_droit);
+		if (sommet_droit == NULL) {
+			perror("Sommet droit malloc");
+			exit(EXIT_FAILURE);
+		}
+
+		memset(sommet_droit -> tab, 0, sizeof sommet_droit -> tab);
+		sommet_droit -> mot_valide = false;
+		sommet_droit -> id = dawg -> id_suivant++;
+		sommet_droit -> fin = false;
+
+		Arete *nouvelle_arete = malloc(sizeof *nouvelle_arete);
+		size_t index;
+
+		if(nouvelle_arete == NULL) {
+			perror("Nouvelle arête Malloc ");
+			exit(EXIT_FAILURE);
+		}
+
+		nouvelle_arete -> label = *lettre;
+		nouvelle_arete -> sommet_gauche = sommet_gauche;
+		nouvelle_arete -> sommet_droit = sommet_droit;
+		index = ascii_to_index(*lettre);
+		sommet_gauche -> tab[index] = sommet_droit;
+		stack_push(dawg -> pile, nouvelle_arete);
+
+		sommet_gauche = sommet_droit;
+	}
+
+	// Etape 4 : Marquer le dernier sommet ajouté
+	sommet_gauche -> fin = true;
+	sommet_gauche -> mot_valide = true;
+	if(dawg -> dernier_sommet != NULL) {
+		free(dawg -> dernier_sommet);
+	}
+	// Puis nous l'ajoutons à la struct
+	dawg -> dernier_sommet = concat(mot, "");
+}
+
+bool recherche_mot_dawg(dawg *dawg, char *mot) {
+	Sommet *sommet;
+	size_t index;
+
+	sommet = dawg -> racine;
+	char *lettre = &mot[0];
+
+	for(; *lettre != '\0'; lettre++) {
+		index = ascii_to_index(*lettre);
+		Sommet *prochain_sommet = sommet -> tab[index];
+		if (prochain_sommet == NULL) {
+			return false;
+		}
+		sommet = prochain_sommet;
+	}
+
+	if(sommet -> mot_valide) {
+		return true;
+	}
+
+	return sommet -> mot_valide;
+}
+
+int suppression_hasmap(void *const hashmap, struct hashmap_element_s *const element) {
+	(void)hashmap;
+	free((char*)element -> key);
+	free((Sommet*)element -> data);
+	return EXIT_SUCCESS;
+}
+
+void suppression_dawg(dawg *dawg) {
+	hashmap_iterate_pairs(&(dawg -> hashmap), suppression_hasmap, NULL);
+	hashmap_destroy(&(dawg -> hashmap));
+	suppression_pile(dawg -> pile);
+	free(dawg -> racine);
+	free(dawg -> dernier_sommet);
+	free(dawg);
+}
+
+dawg *construct_dawg(const char *pathname) {
+	char buf[128];
+	dawg *nouveau_dawg = initilisation_dawg();
+	FILE *fd = fopen(pathname, "r");
+
+	while(fgets(buf, sizeof buf, fd) != NULL) {
+		parse_word(buf);
+		sommet_insertion(nouveau_dawg, buf);
+	}
 
 
-typedef struct dawg_sommet
+	// Obligatoire
+	minimisation(nouveau_dawg, 0);
+
+	fclose(fd);
+
+	return nouveau_dawg;
+}
+
+// Fonction de test des mots en FR ainsi obtenus et retourne un compteur
+float dawg_test_mot_fr(dawg *racine, char *mot, int last)
 {
-	char label[MOT]; /*!< Label unique du sommet courant*/
-	struct dawg_sommet *tab[N]; /*!< Arêtes sortantes du sommet. */
-	bool feuille; /*!< Mot présent dans le dictionnaire ? */
-} dawg_sommet;
+	if (recherche_mot_dawg(racine, mot) && last%1000 >= LASTFR)
+		return 1;
+	else if (recherche_mot_dawg(racine, mot))
+		return 0.5;
+	else
+		return 0;
+}
 
-
-typedef struct dawg_arete
+// Fonction de test des mots en ENG ainsi obtenus et retourne un compteur
+float dawg_test_mot_eng(dawg *racine, char *mot, int last)
 {
-	char label[MOT]; /*!< Label de l'arete */
-	struct dawg_sommet *sommetGauche; /*!< Pointeur vers le sommet gauche. */ // SRC
-	struct dawg_sommet *sommetDroit; /*!< Pointeur vers le sommet droit. */	// DST 
-} dawg_arete;
-
-typedef struct dawg_sommet *DAWG; 
-//typedef struct dawg_arete *dawg_arete; 
-
-
-
-
-
-
-
-DAWG noeud_initialisation() {
-	dawg_sommet *nouveau_noeud = (DAWG)malloc(sizeof(dawg_sommet)); 
-//	dawg_arete arete = malloc(); 
-	nouveau_noeud -> feuille = false; 
-
-//	nouveau_noeud -> label = 0; // De la racine 
-
-
-	for(size_t i = 0; i < N; i++) {
-		nouveau_noeud -> tab[i] = NULL; 
-	}
-	return nouveau_noeud; 
+	if (recherche_mot_dawg(racine, mot) && last%100 >= LASTEN)
+		return 1;
+	else if (recherche_mot_dawg(racine, mot))
+		return 0.5;
+	else
+		return 0;
 }
 
-
-
-
-
-
-void dawg_inserer_destination(DAWG racine, char *source, char *destination) // sommet gauche et sommet droit 
+// Fonction de test des mots en GERM ainsi obtenus et retourne un compteur
+float dawg_test_mot_germ(dawg *racine, char *mot, int last)
 {
-	// Avant minimisation 
-	DAWG chemin = racine; 
-	
-	
-// MALLOC SUR ARETE 
-	dawg_arete *arete;
-
-	size_t index; 
-	
-
-	char *dest_const = destination;  
-	int cptr = 2;
-
-	dawg_sommet *sommetGauche;
-	dawg_sommet *sommetDroit = chemin;
-
-	while(*destination) {
-		arete = malloc(sizeof(dawg_arete));
-		arete -> sommetGauche = sommetDroit;
-
-
-		char label_arete_temp[MOT];
-		snprintf(label_arete_temp, cptr - 1, "%s", dest_const); // -1 au cptr, pour avoir la valeur avant 
-
-		index = ascii_to_index(*destination); 
-		// Création d'un nv noeud si le chemin n'existe pas 
-		if(chemin -> tab[index] == NULL) {
-			chemin -> tab[index] = noeud_initialisation(); 
-		}
-		chemin = chemin -> tab[index]; 
-
-		snprintf(chemin -> label, cptr, "%s", dest_const); 
-//		printf(" %s \n", chemin -> label); 
-//		printf("%d\n", cptr); 
-		cptr++; 
-
-		// grace a l autre snprintf
-		sprintf(arete -> label,"%s-%s", label_arete_temp, chemin -> label); 
-		//printf("LABEL ARETE : %s\n", arete -> label); 
-
-
-		sommetDroit = chemin; 
-		arete -> sommetDroit = sommetDroit;
-
-		// Pour voir si sommet transvase bien les sommets 
-		//printf("sG : %p et sD : %p\n", arete -> sommetGauche, arete -> sommetDroit); 
-
-		destination++; 
-	}
-	chemin -> feuille = true; 
-
-	
-	// MINISATION DE CES MORTS 
-	// size_t n; //Taille du plus grand préfixe commun.
-	// if (source == NULL) n = 0;
-	// else n = plusGrandPrefixeCommun(source, destination);
-
-	// dawg_minimiser(racine, n);
-
-	// if (pile == NULL) dawg_ajouter(racine, destination, n);
-	// else
-	// {
-	// 	dawg_sommet* depart = stack_pop(pile);
-	// 	dawg_ajouter(depart, destination, n);
-	// }
+	if (recherche_mot_dawg(racine, mot) && last%10 >= LASTDE)
+		return 1;
+	else if (recherche_mot_dawg(racine, mot))
+		return 0.5;
+	else
+		return 0;
 }
 
 
+void detec_dawg(char phrase[MAX_SIZE+1], int temps)
+{
+	// Initilisation des compteurs pour déterminer la langue
+	float cptr_fr = 0;
+	float cptr_eng = 0;
+	float cptr_germ = 0;
+	float tmp = 0;
+	int last = 0;
+	clock_t tdInit, ttInit;
+	clock_t tdLecture, ttLecture;
+	clock_t tdDel, ttDel;
 
+	if (temps == 1)
+		tdInit = clock();
+	// Initilisation des dicos dans les "trie"
+	dawg *racine_fr = construct_dawg("dict/french-wordlist.txt");
+	dawg *racine_eng = construct_dawg("dict/english-wordlist.txt");
+	dawg *racine_germ = construct_dawg("dict/german-wordlist.txt");
+	if (temps == 1)
+		ttInit = clock()-tdInit;
 
-bool recherche_mot_arbre(DAWG racine, char *message) {
-	bool result = false; 
-	if(racine == NULL) {
-		return result; 
+	if (temps == 1)
+		tdLecture = clock();
+	// Découpage de la phrase
+	char temp[] = " ";
+	char *mot = strtok(phrase, temp);
+	while(mot != NULL) {
+		last = 0;
+		tmp = 0;
+		tmp = dawg_test_mot_fr(racine_fr, mot, last);
+		if (tmp > 0)
+		{
+			cptr_fr += tmp;
+			last += LASTFR;
+		}
+		tmp = dawg_test_mot_eng(racine_eng, mot, last);
+		if (tmp > 0)
+		{
+			cptr_eng += tmp;
+			last += LASTEN;
+		}
+		tmp = dawg_test_mot_germ(racine_germ, mot, last);
+		if (tmp > 0)
+		{
+			cptr_germ += tmp;
+			last += LASTDE;
+		}
+		mot = strtok(NULL, temp);
 	}
-	size_t index; 
-	DAWG chemin = racine; 
-	// Tant que nous sommes pas à la fin de la string 
-	while(*message) {
+	if (temps == 1)
+		ttLecture = clock()-tdLecture;
 
-		// Pr aller au noeud suivant 
-		index = ascii_to_index(*message); 
-		chemin = chemin -> tab[index]; 
-		
-		// Test si le noeud suivant est existant 
-		if(chemin == NULL) {
-			return result; 
-		}
+	// Affichage de la langue
+	print_langue(cptr_fr, cptr_eng, cptr_germ);
 
-		message++; // Enlève la premiere lettre à chauqe itération mais garde la fin 
-	} 
-	// Si le chemin noeud est une feuille et nous avons atteint 
-	// la fin du message nous retournons vrai 
-	result = chemin -> feuille; 
-	return result; 
-}
-
-
-
-// Ajouter les arêtes 
-void suppression_dawg(DAWG racine) {
-	for(size_t i = 0; i < N; i++) {
-		if(racine -> tab[i] != NULL) {
-			suppression_dawg(racine -> tab[i]); 
-		}
-		else { 
-			continue; 
-		}
+	if (temps == 1)
+		tdDel = clock();
+	// Libération de l'espace mémoire alloué
+	suppression_dawg(racine_fr);
+	suppression_dawg(racine_eng);
+	suppression_dawg(racine_germ);
+	if (temps == 1)
+	{
+		ttDel = clock() - tdDel;
+		printf("*****TEMPS*****\n");
+		printf("Construction : %ld s.\n", ttInit/CLOCKS_PER_SEC);
+		printf("Détection    : %ld s.\n", ttLecture/CLOCKS_PER_SEC);
+		printf("Suppression  : %ld s.\n", ttDel/CLOCKS_PER_SEC);
 	}
-	free(racine); 
-}
-
-
-
-
-// void dawg_minimiser(struct dawg_sommet racine, size_t p)
-// {
-// 	dawg_arete* a;
-// 	while (stack_size(pile) > p)
-// 	{
-// 		a = stack_pop(pile);
-// 		//Si a se trouve dans la hashmap
-// 		if (hashmap_get(hashmap, a->sommetDroit, len) != NULL)
-// 		{
-// 			dawg_relier(a->sommetGauche, a->sommetDroit);
-// 		}
-// 		else
-// 		{
-// 			int res = hashmap_put(hashmap, key, len, a->sommetDroit);
-// 			if (res != 0)
-// 			{
-// 				fprintf(stderr, "dawg_minimiser : Impossible \
-// 				d'ajouter la valeur dans la hashmap\n");
-// 				exit(EXIT_FAILURE);
-// 			}
-// 		}
-// 	}
-// }
-
-// void dawg_ajouter(dawg_sommet depart, char* destination, size_t indexDebut)
-// {
-
-// 	//Pour chaque lettre du suffixe ajoutée au graphe, empiler l'arrete correspondante.
-
-// 	dawg_sommet* dernier = stack_pop(pile);
-// 	dernier->destinationValide = true;
-// }
-
-
-// struct dawg_sommet creation(char* pathToDic)
-// {
-// 	//Instancier le DAWG
-// 	struct dawg_sommet dawg;
-// 	dawg.label = 0;
-// 	dawg.arretesSortantes = NULL;
-// 	dawg.destinationValide = false;
-
-// 	char* lastLine = NULL;
-// 	char *line = NULL;
-// 	size_t len = 0;
-// 	ssize_t read;
-// 	FILE *fp;
-
-// 	fp = fopen(dict, "r");
-// 	if (fp == NULL)
-// 	{
-// 		perror("Error while opening the file.\n");
-// 		exit(EXIT_FAILURE);
-// 	}
-
-// 	// read file
-// 	while ((read = getline(&line, &len, fp)) != -1)
-// 	{
-// 		// remove newline
-// 		size_t length = strlen(line);
-// 		if((length > 0) && (line[length-1] == '\n'))
-// 		{
-// 			line[length-1] ='\0';
-// 		}
-
-// 		dawg_inserer_destination(dawg, lastLine, line);
-// 		lastLine = line;
-// 	}
-
-// 	fclose(fp);
-// 	free(line);
-
-//     return dawg;
-// }
-
-
-int main() {
-	DAWG racine = noeud_initialisation(); 
-	
-	dawg_inserer_destination(racine, "", "zea"); 
-	printf("%d\n", recherche_mot_arbre(racine, "zea"));
-
-	dawg_inserer_destination(racine, "", "zearo"); 
-	printf("%d\n", recherche_mot_arbre(racine, "zearo")); 
-
-	dawg_inserer_destination(racine, "", "albert"); 
-	printf("%d\n", recherche_mot_arbre(racine, "albert")); 
-
-	suppression_dawg(racine); 
 }

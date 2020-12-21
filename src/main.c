@@ -6,6 +6,7 @@
 #include "../header/hashmap.h"
 #include "../header/arbre.h"
 #include "../header/stack.h"
+#include "../header/dawg.h"
 // #include "arbre.c"
 
 #define MAX_SIZE 2047

@@ -3,6 +3,12 @@
 
 #include "../header/stack.h"
 
+//Supprime la stack
+void suppression_pile(struct stack *ptr){
+    free(ptr->items);
+    free(ptr);
+}
+
 // Utility function to initialize stack
 struct stack* new_stack(int capacity)
 {
@@ -36,12 +42,12 @@ int is_stack_full(struct stack *pt)
 // Utility function to add an element x in the stack
 void stack_push(struct stack *pt, void *x)
 {
-	// check if stack is already full. Then inserting an element would 
+	// check if stack is already full. Then inserting an element would
 	// lead to stack overflow
 	if (is_stack_full(pt)) {
 		exit(EXIT_FAILURE);
 	}
-	
+
 	// add an element and increments the top index
 	pt->items[++pt->top] = x;
 }

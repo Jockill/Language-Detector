@@ -60,13 +60,13 @@ Arbre noeud_initialisation(void);
 void noeud_insertion(Noeud *racine, char *message);
 
 // Test si <mot> est en francais et retourne un compteur
-size_t test_mot_fr(Arbre racine, char *mot, size_t cptr);
+float trie_test_mot_fr(Arbre racine, char *mot, int last);
 
 // Test si <mot> est en anglais et retourne un compteur
-size_t test_mot_eng(Arbre racine, char *mot, size_t cptr);
+float trie_test_mot_eng(Arbre racine, char *mot, int last);
 
 // Test si <mot> est en allemand et retourne un compteur
-size_t test_mot_germ(Arbre racine, char *mot, size_t cptr);
+float trie_test_mot_germ(Arbre racine, char *mot, int last);
 
 /*!
    \brief Permet de connaître la présence d'un mot dans l'arbre.

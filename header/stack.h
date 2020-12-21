@@ -6,10 +6,11 @@
 // Data structure for stack
 typedef struct stack {
 	int maxsize;	// define max capacity of stack
-	int top;		
+	int top;
 	void **items;
 } *Stack;
 
+void suppression_pile(struct stack *ptr);
 struct stack* new_stack(int capacity);
 int stack_size(struct stack *pt);
 int is_stack_empty(struct stack *pt);

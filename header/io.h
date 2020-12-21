@@ -16,7 +16,7 @@ void print_header();
 
 void print_help();
 
-void print_langue(size_t cptr_fr, size_t cptr_eng, size_t cptr_germ);
+void print_langue(float cptr_fr, float cptr_eng, float cptr_germ);
 
 void print_quit();
 

@@ -3,9 +3,7 @@
 #include <time.h>
 
 #include "../header/utils.h"
-// #include "../header/io.h"
-// #include "../header/dawg.h"
-// #include "../header/arbre.h"
+
 
 void lecture(char phrase[MAX_SIZE+1])
 {
@@ -35,34 +33,30 @@ void detection(int arbre, int temps)
 
 	lecture(phrase);
 
-	if (temps == 1) tDebut = clock();
+	if (temps == 1)
+	 	tDebut = clock();
 
 
 	if (arbre == DETEC_TRIE)
-	{
 		detec_trie(phrase);
-	}
 	else if (arbre == DETEC_DAWG)
-	{
-		printf("WIP\n");
-		//detec_dawg()
-	}
+		detec_dawg(phrase, temps);
 
 
 	if (temps == 1)
 	{
 		tTotal = clock()-tDebut;
-		printf("\nLa détection a duré %ld ticks d'horloge.\n", tTotal);
+		printf("\nLa détection a duré %ld s.\n", tTotal/CLOCKS_PER_SEC);
 	}
 
 	pause();
 
 }
 
-size_t plusGrandPrefixeCommun(char* mot1, char* mot2)
-{
+size_t plusGrandPrefixeCommun(char* mot1, char* mot2) {
 	size_t i = 0;
-	while (mot1[i] == mot2[i]) i++;
+	while (mot1[i] == mot2[i] && (mot1[i] != '\0') && (mot2[i] != '\0'))
+		i++;
 	return i;
 }
 

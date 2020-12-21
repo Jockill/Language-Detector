@@ -1,7 +1,9 @@
 #include "../header/arbre.h"
 #include <string.h>
-// #include "../header/utils.h"
-// #include "../header/io.h"
+
+#define LASTFR 100
+#define LASTEN 10
+#define LASTDE 1
 
 Arbre construct_trie(char *dict) {
 
@@ -30,8 +32,6 @@ Arbre construct_trie(char *dict) {
 			line[length-1] ='\0';
 		}
 		noeud_insertion(racine, line);
-	// here insert the word in the trie or in the DAWG
-	// To complete ...
 	}
 
 	fclose(fp);
@@ -98,27 +98,36 @@ bool recherche_mot_arbre(Arbre racine, char *message) {
 }
 
 // Fonction de test des mots en FR ainsi obtenus et retourne un compteur
-size_t test_mot_fr(Arbre racine, char *mot, size_t cptr) {
-	if(recherche_mot_arbre(racine, mot)) {
-		cptr++;
-	}
-	return cptr;
+float trie_test_mot_fr(Arbre racine, char *mot, int last)
+{
+	if (recherche_mot_arbre(racine, mot) && last%1000 >= LASTFR)
+		return 1;
+	else if (recherche_mot_arbre(racine, mot))
+		return 0.5;
+	else
+		return 0;
 }
 
 // Fonction de test des mots en ENG ainsi obtenus et retourne un compteur
-size_t test_mot_eng(Arbre racine, char *mot, size_t cptr) {
-	if(recherche_mot_arbre(racine, mot)) {
-		cptr++;
-	}
-	return cptr;
+float trie_test_mot_eng(Arbre racine, char *mot, int last)
+{
+	if (recherche_mot_arbre(racine, mot) && last%100 >= LASTEN)
+		return 1;
+	else if (recherche_mot_arbre(racine, mot))
+		return 0.5;
+	else
+		return 0;
 }
 
 // Fonction de test des mots en GERM ainsi obtenus et retourne un compteur
-size_t test_mot_germ(Arbre racine, char *mot, size_t cptr) {
-	if(recherche_mot_arbre(racine, mot)) {
-		cptr++;
-	}
-	return cptr;
+float trie_test_mot_germ(Arbre racine, char *mot, int last)
+{
+	if (recherche_mot_arbre(racine, mot) && last%10 >= LASTDE)
+		return 1;
+	else if (recherche_mot_arbre(racine, mot))
+		return 0.5;
+	else
+		return 0;
 }
 
 void suppression_arbre(Arbre racine) {
@@ -136,9 +145,12 @@ void suppression_arbre(Arbre racine) {
 void detec_trie(char phrase[MAX_SIZE+1])
 {
 	// Initilisation des compteurs pour déterminer la langue
-	size_t cptr_fr = 0;
-	size_t cptr_eng = 0;
-	size_t cptr_germ = 0;
+	float cptr_fr = 0;
+	float cptr_eng = 0;
+	float cptr_germ = 0;
+	float tmp = 0;
+	int last = 0;
+
 
 	// Initilisation des dicos dans les "trie"
 	Arbre racine_fr = construct_trie("./dict/french-wordlist.txt");
@@ -147,22 +159,31 @@ void detec_trie(char phrase[MAX_SIZE+1])
 
 
 	// Découpage de la phrase
-	// Pas utilisé
-	// size_t len = strlen(phrase);
 	char temp[] = " ";
 	char *mot = strtok(phrase, temp);
 	while(mot != NULL) {
-		// Le truc à faire
-		printf("%s\n", mot);
-		cptr_fr = test_mot_fr(racine_fr, mot, cptr_fr);
-		cptr_eng = test_mot_eng(racine_eng, mot, cptr_eng);
-		cptr_germ = test_mot_germ(racine_germ, mot, cptr_germ);
+		last = 0;
+		tmp = 0;
+		tmp = trie_test_mot_fr(racine_fr, mot, last);
+		if (tmp > 0)
+		{
+			cptr_fr += tmp;
+			last += LASTFR;
+		}
+		tmp = trie_test_mot_eng(racine_eng, mot, last);
+		if (tmp > 0)
+		{
+			cptr_eng += tmp;
+			last += LASTEN;
+		}
+		tmp = trie_test_mot_germ(racine_germ, mot, last);
+		if (tmp > 0)
+		{
+			cptr_germ += tmp;
+			last += LASTDE;
+		}
 		mot = strtok(NULL, temp);
 	}
-	printf("%ld\n", cptr_fr);
-	printf("%ld\n", cptr_eng);
-	printf("%ld\n", cptr_germ);
-
 	// Affichage de la langue
 	print_langue(cptr_fr, cptr_eng, cptr_germ);
 
